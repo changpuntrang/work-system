@@ -1,0 +1,453 @@
+{
+  "settings": {
+    "payType": "daily",
+    "rateValue": 450,
+    "otRatePerHour": 84.38,
+    "password": "1234",
+    "ssoPercent": 5,
+    "lateRatePerMinute": 1
+  },
+  "logs": [
+    {
+      "_id": "1792511804031",
+      "date": "2026-09-11",
+      "location": "เตือน โพรงจรเข้",
+      "jobDescription": "ติดตั้งอุปกรณ์",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792511852183",
+      "date": "2026-09-12",
+      "location": "ท่าส้ม กันตัง",
+      "jobDescription": "ร้อยสายไฟในท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792511946026",
+      "date": "2026-09-14",
+      "location": "กอล์ฟ ฉวาง",
+      "jobDescription": "ติดตั้งอุปกรณ์",
+      "startTime": "08:00",
+      "endTime": "19:00",
+      "otHours": 2,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792512028649",
+      "date": "2026-09-15",
+      "location": "กอล์ฟ ฉวาง",
+      "jobDescription": "ติดตั้งอุปกรณ์",
+      "startTime": "08:00",
+      "endTime": "19:00",
+      "otHours": 2,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792512097673",
+      "date": "2026-09-16",
+      "location": "บอย อ่าวลึก",
+      "jobDescription": "กรีดผนัง ฝังท่อ",
+      "startTime": "08:00",
+      "endTime": "18:30",
+      "otHours": 1.5,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792512238264",
+      "date": "2026-09-18",
+      "location": "แคน หลังรร.วิเชียร",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792512333601",
+      "date": "2026-09-19",
+      "location": "แคน หลังรร.วิเชียร",
+      "jobDescription": "ร้อยสายไฟในท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "19:00",
+      "otHours": 2,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792512414602",
+      "date": "2026-09-21",
+      "location": "กะลาแส",
+      "jobDescription": "ติดตั้งแอร์ เครื่องดูดควัน",
+      "startTime": "08:00",
+      "endTime": "19:30",
+      "otHours": 2.5,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792512510889",
+      "date": "2026-09-22",
+      "location": "คุณมาย  นคร",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "18:30",
+      "otHours": 1.5,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792512615054",
+      "date": "2026-09-23",
+      "location": "คุณมาย  นคร",
+      "jobDescription": "เดินระบบท่อไฟฟ้า  ร้อยสายในท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "18:40",
+      "otHours": 1.5,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792512703029",
+      "date": "2026-09-24",
+      "location": "คุณมาย  นคร",
+      "jobDescription": "ร้อยสายในท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "21:42",
+      "otHours": 4.5,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792513111768",
+      "date": "2026-09-25",
+      "location": "กานดา  ป่าบอน",
+      "jobDescription": "เก็บงานไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "17:30",
+      "otHours": 0.5,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593152734",
+      "date": "2026-08-26",
+      "location": "ไม่ระบุ",
+      "jobDescription": "ล้างแอร์",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593221325",
+      "date": "2026-08-28",
+      "location": "คุณมาย นคร",
+      "jobDescription": "กรีดผนัง ฝังท่อ",
+      "startTime": "08:00",
+      "endTime": "19:00",
+      "otHours": 2,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593283194",
+      "date": "2026-08-29",
+      "location": "คุณมาย นคร",
+      "jobDescription": "กรีดผนัง ฝังท่อ",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593397822",
+      "date": "2026-08-31",
+      "location": "บอย ท่าศาลา",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "19:00",
+      "otHours": 2,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593457714",
+      "date": "2026-09-01",
+      "location": "บอย ท่าศาลา",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "19:00",
+      "otHours": 2,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593529370",
+      "date": "2026-09-02",
+      "location": "สมโชค ท่าส้ม",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593598561",
+      "date": "2026-09-03",
+      "location": "สมโชค ท่าส้ม",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593617850",
+      "date": "2026-09-04",
+      "location": "สมโชค ท่าส้ม",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593644676",
+      "date": "2026-09-05",
+      "location": "สมโชค ท่าส้ม",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593672526",
+      "date": "2026-09-07",
+      "location": "สมโชค ท่าส้ม",
+      "jobDescription": "ร้อยสายไฟในท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593694937",
+      "date": "2026-09-08",
+      "location": "สมโชค ท่าส้ม",
+      "jobDescription": "ร้อยสายไฟในท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593747011",
+      "date": "2026-09-09",
+      "location": "ปลา ลิพัง",
+      "jobDescription": "ติดตั้งอุปกรณ์",
+      "startTime": "08:00",
+      "endTime": "18:00",
+      "otHours": 1,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792593786777",
+      "date": "2026-09-10",
+      "location": "ปลา ลิพัง",
+      "jobDescription": "ติดตั้งอุปกรณ์",
+      "startTime": "08:00",
+      "endTime": "18:00",
+      "otHours": 1,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1792594327176",
+      "date": "2026-09-17",
+      "location": "แคน หลังวิเชียร /นาเกลือ",
+      "jobDescription": "เดินระบบท่อไฟฟ้า ติดตั้งกล้องวงจรปิด",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793004163820",
+      "date": "2026-09-26",
+      "location": "ปลา ลิพัง",
+      "jobDescription": "ร้อยสายเมนไฟฟ้า  เก็บงานไฟ",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "otHours": 0,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793004243152",
+      "date": "2026-09-27",
+      "location": "ฉลุง สตูล",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "18:30",
+      "otHours": 1.5,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793004287600",
+      "date": "2026-09-29",
+      "location": "ฉลุง สตูล",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "18:00",
+      "otHours": 1,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793004337225",
+      "date": "2026-09-30",
+      "location": "ฉลุง สตูล",
+      "jobDescription": "ร้อยสายในท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "19:30",
+      "otHours": 2.5,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793004819976",
+      "date": "2026-10-01",
+      "location": "  ฉวาง นคร",
+      "jobDescription": "ติดตั้งแอร์",
+      "startTime": "08:00",
+      "endTime": "19:00",
+      "otHours": 2,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793004846559",
+      "date": "2026-10-02",
+      "location": "  ฉวาง นคร",
+      "jobDescription": "ติดตั้งแอร์",
+      "startTime": "08:00",
+      "endTime": "18:00",
+      "otHours": 1,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793005537976",
+      "date": "2026-10-03",
+      "location": "ฉลุง สตูล",
+      "jobDescription": "ร้อยสายในท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "22:00",
+      "otHours": 5,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793005602846",
+      "date": "2026-10-06",
+      "location": "คิม ปลายพระยา",
+      "jobDescription": "กรีดผนังฝังท่อ",
+      "startTime": "08:00",
+      "endTime": "18:00",
+      "otHours": 1,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793005694901",
+      "date": "2026-10-07",
+      "location": "คิม ปลายพระยา/บอย อ่าวลึก",
+      "jobDescription": "เก็บงานไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "18:40",
+      "otHours": 1.5,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793005760589",
+      "date": "2026-10-08",
+      "location": "จัสมิน กระบี่",
+      "jobDescription": "เดินระบบท่อไฟฟ้า",
+      "startTime": "08:00",
+      "endTime": "18:45",
+      "otHours": 1.5,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    },
+    {
+      "_id": "1793005822142",
+      "date": "2026-10-09",
+      "location": "จัสมิน กระบี่/ถ้ำเสือ",
+      "jobDescription": "ร้อยสายในท่อไฟฟ้า/ติดตั้งปลั๊กชั่วคราวเพิ่ม",
+      "startTime": "08:00",
+      "endTime": "21:00",
+      "otHours": 4,
+      "lateMinutes": 0,
+      "note": "",
+      "username": "changpun"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "username": "admin",
+      "password": "1234",
+      "role": "admin",
+      "status": "approved"
+    },
+    {
+      "id": "1792509551763",
+      "username": "changpun",
+      "password": "1234",
+      "role": "user",
+      "status": "approved"
+    },
+    {
+      "id": "1793795574503",
+      "username": "user2",
+      "password": "1234",
+      "role": "user",
+      "status": "approved"
+    }
+  ]
+}
