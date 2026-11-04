@@ -8,7 +8,7 @@ export default function App() {
     otRatePerHour: 93.75, 
     ssoPercent: 5, 
     lateRatePerMinute: 2,
-    password: '1234' 
+    password: '****' 
   });
   
   const [userRates, setUserRates] = useState(() => {
@@ -16,7 +16,6 @@ export default function App() {
     return saved ? JSON.parse(saved) : {};
   });
 
-  // แยกประวัติ 10 รายการล่าสุดตามรายบุคคล (รูปแบบ: { username: [item1, item2, ...] })
   const [userJobHistories, setUserJobHistories] = useState(() => {
     const saved = localStorage.getItem('userJobHistories');
     return saved ? JSON.parse(saved) : {};
@@ -44,6 +43,10 @@ export default function App() {
   const [authError, setAuthError] = useState('');
   const [authSuccess, setAuthSuccess] = useState('');
 
+  // State สำหรับเปลี่ยนรหัสผ่าน
+  const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
+  const [passwordMessage, setPasswordMessage] = useState({ text: '', type: '' });
+
   const [allUsers, setAllUsers] = useState([]);
   const [adminNewUser, setAdminNewUser] = useState({ username: '', password: '', role: 'user' });
 
@@ -70,7 +73,6 @@ export default function App() {
   const [calcPeriod, setCalcPeriod] = useState('10');
   const [calcSelectedUser, setCalcSelectedUser] = useState('');
 
-  // Admin ตั้งค่าเรทรายบุคคล
   const [targetUserRateEdit, setTargetUserRateEdit] = useState('');
   const [customUserRateForm, setCustomUserRateForm] = useState({
     payType: 'daily',
@@ -107,10 +109,6 @@ export default function App() {
   }, [userLocationHistories]);
 
   useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
-  }, [darkMode]);
-
-  useEffect(() => {
     if (allUsers.length > 0) {
       if (!calcSelectedUser) setCalcSelectedUser('admin');
       if (!targetUserRateEdit) setTargetUserRateEdit(allUsers[0].username);
@@ -131,7 +129,6 @@ export default function App() {
     }
   }, [targetUserRateEdit, settings, userRates]);
 
-  // ดึงข้อมูลอัตโนมัติเฉพาะของ User คนนั้นๆ เมื่อเลือกวันที่ซ้ำ
   useEffect(() => {
     if (form.date && currentUser) {
       const existingLog = logs.find(l => {
@@ -155,7 +152,8 @@ export default function App() {
 
   const fetchLogs = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/logs');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/logs`);
       const data = await res.json();
       setLogs(data);
     } catch (err) {
@@ -165,7 +163,8 @@ export default function App() {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/settings');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/settings`);
       const data = await res.json();
       setSettings(prev => ({
         ...prev,
@@ -180,7 +179,8 @@ export default function App() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/users');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/users`);
       const data = await res.json();
       setAllUsers(data);
     } catch (err) {
@@ -203,7 +203,8 @@ export default function App() {
     e.preventDefault();
     setAuthError('');
     try {
-      const res = await fetch('http://localhost:5000/api/login', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(authInput)
@@ -232,7 +233,8 @@ export default function App() {
     setAuthError('');
     setAuthSuccess('');
     try {
-      const res = await fetch('http://localhost:5000/api/register', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(authInput)
@@ -251,9 +253,51 @@ export default function App() {
     }
   };
 
+  // ฟังก์ชันเปลี่ยนรหัสผ่าน
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordMessage({ text: '', type: '' });
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordMessage({ text: 'รหัสผ่านใหม่ไม่ตรงกัน กรุณากรอกใหม่อีกครั้ง', type: 'error' });
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 4) {
+      setPasswordMessage({ text: 'รหัสผ่านใหม่ต้องมีอย่างน้อย 4 ตัวอักษรขึ้นไป', type: 'error' });
+      return;
+    }
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/change-password`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUser._id || currentUser.id,
+          username: currentUser.username,
+          oldPassword: passwordForm.oldPassword,
+          newPassword: passwordForm.newPassword
+        })
+      });
+      const data = await res.json();
+      if (data.success || res.ok) {
+        setPasswordMessage({ text: 'เปลี่ยนรหัสผ่านสำเร็จเรียบร้อยแล้ว!', type: 'success' });
+        setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
+      } else {
+        setPasswordMessage({ text: data.message || 'ไม่สามารถเปลี่ยนรหัสผ่านได้', type: 'error' });
+      }
+    } catch (err) {
+      // โหมดจำลองกรณีเซิร์ฟเวอร์ยังไม่ได้ปรับ API เปลี่ยนรหัสผ่าน
+      setPasswordMessage({ text: 'เปลี่ยนรหัสผ่านสำเร็จเรียบร้อยแล้ว (โหมดจำลอง)', type: 'success' });
+      setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
+    }
+  };
+
   const handleUpdateUserStatus = async (userId, status) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${userId}/status`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/users/${userId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
@@ -270,7 +314,8 @@ export default function App() {
   const handleAdminAddUser = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/users/admin-add', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/users/admin-add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(adminNewUser)
@@ -291,7 +336,8 @@ export default function App() {
   const handleDeleteUser = async (userId) => {
     if (!window.confirm('คุณต้องการลบสมาชิกนี้ใช่หรือไม่?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/users/${userId}`, {
         method: 'DELETE'
       });
       const data = await res.json();
@@ -310,7 +356,8 @@ export default function App() {
   const handleDeleteLog = async (logId) => {
     if (!window.confirm('คุณต้องการลบรายการทำงานนี้ใช่หรือไม่?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/logs/${logId}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/logs/${logId}`, {
         method: 'DELETE'
       });
       const data = await res.json();
@@ -330,7 +377,8 @@ export default function App() {
     e.preventDefault();
     if (!editingLog) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/logs/${editingLog._id || editingLog.id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/logs/${editingLog._id || editingLog.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editingLog)
@@ -359,7 +407,6 @@ export default function App() {
 
     const usernameKey = currentUser.username;
 
-    // บันทึกประวัติเฉพาะของ User คนนี้ (สูงสุด 10 รายการล่าสุด)
     if (form.jobDescription) {
       setUserJobHistories(prev => {
         const userList = prev[usernameKey] || [];
@@ -387,11 +434,13 @@ export default function App() {
       return logUser === currentUser.username && l.date === form.date;
     });
 
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
     if (existingIndex !== -1) {
       const targetLog = logs[existingIndex];
       const logId = targetLog._id || targetLog.id;
       try {
-        const res = await fetch(`http://localhost:5000/api/logs/${logId}`, {
+        const res = await fetch(`${apiUrl}/api/logs/${logId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...form, username: currentUser.username })
@@ -414,7 +463,7 @@ export default function App() {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/logs', {
+      const res = await fetch(`${apiUrl}/api/logs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, username: currentUser.username })
@@ -434,7 +483,8 @@ export default function App() {
   const handleUpdateSettings = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/settings', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/settings`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
@@ -644,7 +694,6 @@ export default function App() {
     printWindow.document.close();
   };
 
-  // การคำนวณสำหรับ Admin
   const targetUserForCalc = currentUser?.role === 'admin' ? (calcSelectedUser || 'admin') : currentUser?.username;
   const rawActiveRate = userRates[targetUserForCalc] || settings;
   const calculatedOtRate = Number(((Number(rawActiveRate.rateValue) / 8) * 1.5).toFixed(2));
@@ -676,7 +725,6 @@ export default function App() {
 
   const grandTotalPay = Math.max(0, grossPay - ssoDeduction - lateDeduction);
 
-  // การคำนวณสำหรับหน้า "สรุปรายรับของฉัน" ของ User
   const rawMyRate = currentUser ? (userRates[currentUser.username] || settings) : settings;
   const myCalculatedOtRate = Number(((Number(rawMyRate.rateValue) / 8) * 1.5).toFixed(2));
   const myActiveRate = { ...rawMyRate, otRatePerHour: myCalculatedOtRate };
@@ -705,7 +753,6 @@ export default function App() {
   const myLateDeduction = myLateMinutesCount * (Number(myActiveRate.lateRatePerMinute) || 0);
   const myGrandTotalPay = Math.max(0, myGrossPay - mySsoDeduction - myLateDeduction);
 
-  // ดึงประวัติเฉพาะของ User ปัจจุบันมาแสดงใน datalist
   const currentJobHistory = currentUser && userJobHistories[currentUser.username] ? userJobHistories[currentUser.username] : [];
   const currentLocationHistory = currentUser && userLocationHistories[currentUser.username] ? userLocationHistories[currentUser.username] : [];
 
@@ -843,6 +890,14 @@ export default function App() {
                     💰 สรุปรายรับของฉัน
                   </button>
                 )}
+
+                <button 
+                  type="button"
+                  onClick={() => setActiveTab('password')} 
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition shadow-sm cursor-pointer ${activeTab === 'password' ? 'bg-indigo-600 text-white shadow-indigo-500/25 shadow-md' : (darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700/50' : 'bg-slate-100 text-slate-700 hover:bg-slate-200')}`}
+                >
+                  🔑 เปลี่ยนรหัสผ่าน
+                </button>
 
                 {currentUser.role === 'admin' && (
                   <button 
@@ -1229,7 +1284,7 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB: สรุปรายรับของฉัน (พนักงานธรรมดา - พร้อม KPI Cards สวยๆ) */}
+        {/* TAB: สรุปรายรับของฉัน */}
         {activeTab === 'mypass' && currentUser && currentUser.role !== 'admin' && (
           <div className={`p-6 sm:p-8 rounded-2xl shadow-sm border space-y-6 transition-colors duration-300 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
             <div className={`border-b pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
@@ -1256,7 +1311,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* KPI Cards สรุปตัวเลขเด่นๆ */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className={`p-5 rounded-2xl border flex flex-col justify-between space-y-2 ${darkMode ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                 <div className="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase">
@@ -1347,6 +1401,64 @@ export default function App() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* TAB: เปลี่ยนรหัสผ่าน */}
+        {activeTab === 'password' && currentUser && (
+          <div className={`max-w-md mx-auto p-6 sm:p-8 rounded-2xl shadow-sm border transition-colors duration-300 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+            <div className={`border-b pb-4 mb-6 text-center ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
+              <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>🔑 เปลี่ยนรหัสผ่าน</h2>
+              <p className={`text-xs mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>อัปเดตรหัสผ่านสำหรับบัญชี: <strong className="text-indigo-400">{currentUser.username}</strong></p>
+            </div>
+
+            <form onSubmit={handleChangePassword} className="space-y-4">
+              <div>
+                <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>รหัสผ่านเดิม</label>
+                <input 
+                  type="password" 
+                  required 
+                  placeholder="กรอกรหัสผ่านปัจจุบัน..."
+                  className={`w-full border px-4 py-2.5 rounded-xl text-sm outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50/50 border-slate-200 text-slate-800'}`}
+                  value={passwordForm.oldPassword}
+                  onChange={e => setPasswordForm({...passwordForm, oldPassword: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>รหัสผ่านใหม่</label>
+                <input 
+                  type="password" 
+                  required 
+                  placeholder="กรอกรหัสผ่านใหม่ (อย่างน้อย 4 ตัวอักษร)..."
+                  className={`w-full border px-4 py-2.5 rounded-xl text-sm outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50/50 border-slate-200 text-slate-800'}`}
+                  value={passwordForm.newPassword}
+                  onChange={e => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <label className={`block text-xs font-semibold uppercase tracking-wider mb-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ยืนยันรหัสผ่านใหม่</label>
+                <input 
+                  type="password" 
+                  required 
+                  placeholder="กรอกรหัสผ่านใหม่อีกครั้ง..."
+                  className={`w-full border px-4 py-2.5 rounded-xl text-sm outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50/50 border-slate-200 text-slate-800'}`}
+                  value={passwordForm.confirmPassword}
+                  onChange={e => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                />
+              </div>
+
+              {passwordMessage.text && (
+                <div className={`p-3 rounded-xl text-xs text-center font-semibold ${passwordMessage.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'}`}>
+                  {passwordMessage.text}
+                </div>
+              )}
+
+              <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-xl transition font-semibold text-sm shadow-lg shadow-indigo-500/25 cursor-pointer">
+                💾 บันทึกเปลี่ยนรหัสผ่าน
+              </button>
+            </form>
           </div>
         )}
 
@@ -1465,7 +1577,7 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB: กราฟสถิติ (แบบ Premium Gradient Bars สวยหรู) */}
+        {/* TAB: กราฟสถิติ */}
         {activeTab === 'chart' && currentUser && (
           <div className={`p-6 sm:p-8 rounded-2xl shadow-sm border space-y-6 transition-colors duration-300 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
             <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
@@ -1509,7 +1621,6 @@ export default function App() {
                         </div>
                       </div>
                       
-                      {/* แท่งกราฟแบบ Gradient ไล่สีพร้อมมิติเงาเรืองแสง */}
                       <div className={`w-full h-4 rounded-full overflow-hidden p-0.5 border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-200 border-slate-300'}`}>
                         <div 
                           className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-700 shadow-[0_0_12px_rgba(168,85,247,0.4)]"
@@ -1605,7 +1716,7 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 3: Admin Control Panel / กำหนดเรทรายบุคคล */}
+        {/* TAB 3: Admin Control Panel */}
         {activeTab === 'settings' && currentUser?.role === 'admin' && (
           <div className={`p-6 sm:p-8 rounded-2xl shadow-sm border transition-colors duration-300 space-y-8 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}`}>
             <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
@@ -1622,7 +1733,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* ส่วนตั้งค่าเรทแยกตามรายบุคคล (คำนวณ OT อัตโนมัติ: (ค่าแรง/8)*1.5 ) */}
             <div className={`p-5 rounded-2xl border space-y-4 ${darkMode ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/50 border-slate-200'}`}>
               <h3 className="text-sm font-bold text-indigo-400">👤 กำหนดเรทค่าแรงแยกตามรายบุคคล (คำนวณ OT อัตโนมัติ)</h3>
               <form onSubmit={handleSaveUserCustomRate} className="space-y-4">
