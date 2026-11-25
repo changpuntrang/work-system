@@ -43,7 +43,7 @@ export default function App() {
   const [authError, setAuthError] = useState('');
   const [authSuccess, setAuthSuccess] = useState('');
 
-  // State สำหรับเปลี่ยนรหัสผ่าน (เชื่อมต่อเซิร์ฟเวอร์จริง - ไม่มีโหมดจำลอง)
+  // State สำหรับเปลี่ยนรหัสผ่าน
   const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
   const [passwordMessage, setPasswordMessage] = useState({ text: '', type: '' });
 
@@ -247,7 +247,7 @@ export default function App() {
     }
   };
 
-  // ฟังก์ชันเปลี่ยนรหัสผ่านใช้งานจริงกับ Backend
+  // ฟังก์ชันเปลี่ยนรหัสผ่านและออกจากระบบอัตโนมัติ
   const handleChangePassword = async (e) => {
     e.preventDefault();
     setPasswordMessage({ text: '', type: '' });
@@ -277,8 +277,13 @@ export default function App() {
       const data = await res.json();
       
       if (res.ok && data.success) {
-        setPasswordMessage({ text: 'เปลี่ยนรหัสผ่านสำเร็จ! สามารถใช้รหัสผ่านใหม่เข้าสู่ระบบได้ทันที', type: 'success' });
+        setPasswordMessage({ text: 'เปลี่ยนรหัสผ่านสำเร็จ! กำลังออกจากระบบเพื่อให้คุณเข้าสู่ระบบด้วยรหัสใหม่...', type: 'success' });
         setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
+        
+        setTimeout(() => {
+          setCurrentUser(null);
+          setActiveTab('auth');
+        }, 1500);
       } else {
         setPasswordMessage({ text: data.message || 'รหัสผ่านเดิมไม่ถูกต้อง', type: 'error' });
       }
