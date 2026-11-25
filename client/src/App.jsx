@@ -526,6 +526,15 @@ export default function App() {
     downloadAnchor.remove();
   };
 
+  // ฟังก์ชันสร้างลิงก์เพิ่มลงปฏิทินมือถือ (Google Calendar)
+  const handleAddCalendarReminder = () => {
+    const title = encodeURIComponent('⏰ ถึงเวลาบันทึกงานประจำวันแล้ว!');
+    const details = encodeURIComponent('อย่าลืมเปิดเว็บระบบบันทึกการทำงานเพื่อกรอกข้อมูลประจำวันของคุณครับ');
+    // ตั้งเวลาเตือนทุกวัน เวลา 18:00 น.
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&recur=RRULE:FREQ=DAILY`;
+    window.open(googleCalendarUrl, '_blank');
+  };
+
   const getPeriodDateRange = (monthStr, periodType) => {
     if (!monthStr) return { start: '', end: '' };
     const [year, month] = monthStr.split('-').map(Number);
@@ -864,6 +873,15 @@ export default function App() {
           <div className="flex flex-wrap items-center justify-center gap-2 w-full lg:w-auto">
             {currentUser && (
               <>
+                <button 
+                  type="button"
+                  onClick={handleAddCalendarReminder}
+                  className="bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-500 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-amber-500/20 cursor-pointer flex items-center gap-1.5"
+                  title="ตั้งเตือนผ่านปฏิทินมือถือ"
+                >
+                  📅 ตั้งเตือนปฏิทิน
+                </button>
+
                 <button 
                   type="button"
                   onClick={() => setActiveTab('log')} 
