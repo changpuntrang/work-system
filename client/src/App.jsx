@@ -47,7 +47,7 @@ export default function App() {
   const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
   const [passwordMessage, setPasswordMessage] = useState({ text: '', type: '' });
 
-  // State สำหรับฟังก์ชัน "ทดลองคิดรายรับของฉัน" (ตัดช่อง SSO ออก เหลือให้กรอกเรทค่าแรงและค่าปรับมาสาย)
+  // State สำหรับฟังก์ชัน "ทดลองคิดรายรับของฉัน"
   const [myCalcForm, setMyCalcForm] = useState({
     payType: 'daily',
     rateValue: 500,
@@ -1289,7 +1289,7 @@ export default function App() {
             <div className={`border-b pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
               <div>
                 <h2 className="text-xl font-bold text-indigo-400">🧮 ทดลองคิดรายรับของฉัน ({currentUser.username})</h2>
-                <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>กรอกเรทค่าแรงและค่าปรับมาสายเพื่อทดลองคำนวณรายรับในรอบนี้ (ประกันสังคมหักตามเรท Admin อัตโนมัติ)</p>
+                <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>กรอกเรทค่าแรงและค่าปรับมาสายเพื่อทดลองคำนวณรายรับในรอบนี้</p>
               </div>
               
               <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -1310,7 +1310,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* ฟอร์มกรอกข้อมูลการคำนวณ (ตัดช่องประกันสังคมออกแล้ว) */}
+            {/* ฟอร์มกรอกข้อมูลการคำนวณ */}
             <div className={`p-5 rounded-2xl border space-y-4 ${darkMode ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/50 border-slate-200'}`}>
               <h3 className="text-sm font-bold text-indigo-400">⚙️ กำหนดค่าคำนวณของคุณ</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1407,7 +1407,7 @@ export default function App() {
                 <span className="font-bold text-amber-500">{myOtPay.toLocaleString()} บาท</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className={darkMode ? 'text-slate-400' : 'text-slate-600'}>หัก ประกันสังคม ({mySsoPercent}% ดึงจาก Admin):</span>
+                <span className={darkMode ? 'text-slate-400' : 'text-slate-600'}>หัก ประกันสังคม ({mySsoPercent}%):</span>
                 <span className="font-bold text-red-400">-{mySsoDeduction.toLocaleString()} บาท</span>
               </div>
               <div className="flex justify-between text-sm">
