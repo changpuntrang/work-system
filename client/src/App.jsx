@@ -530,7 +530,6 @@ export default function App() {
   const handleAddCalendarReminder = () => {
     const title = encodeURIComponent('⏰ ถึงเวลาบันทึกงานประจำวันแล้ว!');
     const details = encodeURIComponent('อย่าลืมเปิดเว็บระบบบันทึกการทำงานเพื่อกรอกข้อมูลประจำวันของคุณครับ');
-    // ตั้งเวลาเตือนทุกวัน เวลา 18:00 น.
     const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&recur=RRULE:FREQ=DAILY`;
     window.open(googleCalendarUrl, '_blank');
   };
@@ -851,36 +850,41 @@ export default function App() {
     <div className={`min-h-screen p-3 sm:p-6 lg:p-8 font-sans transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
       <div className="max-w-7xl mx-auto space-y-6">
         
-        {/* Header */}
-        <header className={`p-4 sm:p-6 rounded-2xl shadow-sm border flex flex-col lg:flex-row justify-between items-center gap-4 transition-colors duration-300 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-          <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
-            <div className={`p-3 rounded-xl ${darkMode ? 'bg-indigo-500/10 text-indigo-400' : 'bg-indigo-50 text-indigo-600'} text-2xl`}>📋</div>
+        {/* Header - จัดเลย์เอาต์ใหม่ให้สวยงาม เป็นระเบียบ */}
+        <header className={`p-4 sm:p-6 rounded-2xl shadow-sm border flex flex-col xl:flex-row justify-between items-center gap-5 transition-colors duration-300 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+          
+          {/* ส่วนหัวข้อและข้อมูลผู้ใช้ */}
+          <div className="flex items-center gap-4 text-center sm:text-left w-full xl:w-auto justify-center xl:justify-start">
+            <div className={`p-3.5 rounded-2xl ${darkMode ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'} text-3xl shadow-inner`}>📋</div>
             <div>
-              <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>ระบบบันทึกการทำงาน</h1>
+              <h1 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>ระบบบันทึกการทำงาน</h1>
               {currentUser && (
-                <div className="flex items-center justify-center sm:justify-start gap-2 mt-1">
-                  <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${currentUser.role === 'admin' ? 'bg-purple-900/50 text-purple-300 border border-purple-700' : 'bg-blue-900/50 text-blue-300 border border-blue-700'}`}>
+                <div className="flex items-center justify-center sm:justify-start gap-2 mt-1.5">
+                  <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold tracking-wide ${currentUser.role === 'admin' ? 'bg-purple-900/60 text-purple-300 border border-purple-700/50' : 'bg-blue-900/60 text-blue-300 border border-blue-700/50'}`}>
                     {currentUser.role.toUpperCase()}
                   </span>
                   <span className={`text-xs font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                    ผู้ใช้งาน: {currentUser.username}
+                    ผู้ใช้งาน: <strong className={darkMode ? 'text-slate-200' : 'text-slate-700'}>{currentUser.username}</strong>
                   </span>
                 </div>
               )}
             </div>
           </div>
           
-          <div className="flex flex-wrap items-center justify-center gap-2 w-full lg:w-auto">
+          {/* ส่วนปุ่มเมนูและเครื่องมือ */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 w-full xl:w-auto">
             {currentUser && (
               <>
                 <button 
                   type="button"
                   onClick={handleAddCalendarReminder}
-                  className="bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-500 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-amber-500/20 cursor-pointer flex items-center gap-1.5"
+                  className="bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-500 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-amber-500/20 cursor-pointer flex items-center gap-1.5 shadow-sm"
                   title="ตั้งเตือนผ่านปฏิทินมือถือ"
                 >
                   📅 ตั้งเตือนปฏิทิน
                 </button>
+
+                <div className={`h-6 w-[1px] mx-1 hidden sm:block ${darkMode ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
 
                 <button 
                   type="button"
@@ -929,7 +933,7 @@ export default function App() {
                 <button 
                   type="button"
                   onClick={() => { setCurrentUser(null); localStorage.removeItem('currentUser'); setActiveTab('auth'); }} 
-                  className="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-red-500/20 cursor-pointer"
+                  className="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-red-500/20 cursor-pointer shadow-sm"
                 >
                   ออกจากระบบ
                 </button>
@@ -946,10 +950,12 @@ export default function App() {
               </button>
             )}
 
+            <div className={`h-6 w-[1px] mx-1 hidden sm:block ${darkMode ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
+
             <button 
               type="button"
               onClick={() => setDarkMode(!darkMode)} 
-              className={`p-2.5 rounded-xl text-sm transition border cursor-pointer ${darkMode ? 'bg-slate-800 border-slate-700 text-yellow-400 hover:bg-slate-700' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'}`}
+              className={`p-2.5 rounded-xl text-sm transition border cursor-pointer shadow-sm ${darkMode ? 'bg-slate-800 border-slate-700 text-yellow-400 hover:bg-slate-700' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'}`}
               title="สลับโหมดมืด/สว่าง"
             >
               {darkMode ? '☀️' : '🌙'}
