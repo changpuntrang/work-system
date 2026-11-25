@@ -32,7 +32,6 @@ const readDb = () => {
     const data = fs.readFileSync(DB_FILE, 'utf8');
     const parsed = JSON.parse(data);
     
-    // ตรวจสอบโครงสร้างพื้นฐาน ถ้าไม่มีให้เติมโดยไม่ลบของเดิม
     let isModified = false;
     if (!parsed.settings) {
       parsed.settings = { payType: 'daily', rateValue: 500, otRatePerHour: 75 };
@@ -42,7 +41,6 @@ const readDb = () => {
       parsed.users = [{ id: '1', username: 'admin', password: '123', role: 'admin', status: 'approved' }];
       isModified = true;
     } else {
-      // เช็คว่ามี admin เผื่อไว้ไหม ถ้ายังไม่มีให้เพิ่มเข้าไป
       const hasAdmin = parsed.users.some(u => u.username === 'admin');
       if (!hasAdmin) {
         parsed.users.push({ id: '1', username: 'admin', password: '123', role: 'admin', status: 'approved' });
@@ -217,7 +215,7 @@ app.post('/api/users/admin-add', (req, res) => {
 });
 
 // 11. อัปเดตสถานะสมาชิก (อนุมัติ / ระงับ)
-app.put('/api/users/:id/status', (req, res, next) => {
+app.put('/api/users/:id/status', (req, res) => {
   const userId = req.params.id;
   const { status } = req.body;
   const db = readDb();
@@ -246,6 +244,30 @@ app.delete('/api/users/:id', (req, res) => {
 
   writeDb(db);
   res.json({ success: true, users: db.users });
+});
+
+// 13. เปลี่ยนรหัสผ่าน (ทำงานร่วมกับ db.json)
+app.put('/api/change-password', (req, res) => {
+  const { userId, username, oldPassword, newPassword } = req.body;
+  const db = readDb();
+
+  const user = (db.users || []).find(u => 
+    (userId && (u.id === userId || u._id === userId)) || 
+    (username && u.username === username)
+  );
+
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'ไม่พบผู้ใช้งานนี้ในระบบ' });
+  }
+
+  if (user.password !== oldPassword) {
+    return res.status(400).json({ success: false, message: 'รหัสผ่านเดิมไม่ถูกต้อง' });
+  }
+
+  user.password = newPassword;
+  writeDb(db);
+
+  res.json({ success: true, message: 'เปลี่ยนรหัสผ่านสำเร็จเรียบร้อยแล้ว' });
 });
 
 app.listen(PORT, () => {
