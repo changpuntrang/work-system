@@ -32,6 +32,7 @@ export default function App() {
   });
 
   const [activeTab, setActiveTab] = useState('auth');
+  const [showQrModal, setShowQrModal] = useState(false);
 
   const [currentUser, setCurrentUser] = useState(() => {
     const savedUser = localStorage.getItem('currentUser');
@@ -850,10 +851,9 @@ export default function App() {
     <div className={`min-h-screen p-3 sm:p-6 lg:p-8 font-sans transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
       <div className="max-w-7xl mx-auto space-y-6">
         
-        {/* Header - จัดเลย์เอาต์ใหม่ให้สวยงาม เป็นระเบียบ */}
+        {/* Header - จัดเลย์เอาต์สวยงาม รองรับทุกหน้าจอ */}
         <header className={`p-4 sm:p-6 rounded-2xl shadow-sm border flex flex-col xl:flex-row justify-between items-center gap-5 transition-colors duration-300 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
           
-          {/* ส่วนหัวข้อและข้อมูลผู้ใช้ */}
           <div className="flex items-center gap-4 text-center sm:text-left w-full xl:w-auto justify-center xl:justify-start">
             <div className={`p-3.5 rounded-2xl ${darkMode ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'} text-3xl shadow-inner`}>📋</div>
             <div>
@@ -871,7 +871,6 @@ export default function App() {
             </div>
           </div>
           
-          {/* ส่วนปุ่มเมนูและเครื่องมือ */}
           <div className="flex flex-wrap items-center justify-center gap-2.5 w-full xl:w-auto">
             {currentUser && (
               <>
@@ -882,6 +881,15 @@ export default function App() {
                   title="ตั้งเตือนผ่านปฏิทินมือถือ"
                 >
                   📅 ตั้งเตือนปฏิทิน
+                </button>
+
+                <button 
+                  type="button"
+                  onClick={() => setShowQrModal(true)}
+                  className="bg-indigo-500/10 hover:bg-indigo-500 hover:text-white text-indigo-400 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-indigo-500/20 cursor-pointer flex items-center gap-1.5 shadow-sm"
+                  title="แสดง QR Code สำหรับแชร์เว็บ"
+                >
+                  📱 QR แชร์เว็บ
                 </button>
 
                 <div className={`h-6 w-[1px] mx-1 hidden sm:block ${darkMode ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
@@ -962,6 +970,29 @@ export default function App() {
             </button>
           </div>
         </header>
+
+        {/* Modal แสดง QR Code สำหรับแชร์เว็บ */}
+        {showQrModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className={`w-full max-w-sm p-6 rounded-2xl shadow-xl border text-center space-y-4 ${darkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-100 text-slate-800'}`}>
+              <div className="flex justify-between items-center border-b pb-3 border-slate-700/50">
+                <h3 className="text-base font-bold">📱 สแกน QR Code เพื่อเปิดเว็บ</h3>
+                <button type="button" onClick={() => setShowQrModal(false)} className="text-slate-400 hover:text-red-500 text-xl font-bold cursor-pointer">&times;</button>
+              </div>
+              <div className="flex justify-center p-3 bg-white rounded-2xl shadow-inner">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(window.location.href)}`} 
+                  alt="QR Code" 
+                  className="w-48 h-48 object-contain"
+                />
+              </div>
+              <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ให้เพื่อนร่วมงานเปิดกล้องมือถือสแกนเพื่อเข้าสู่ระบบได้ทันที</p>
+              <button type="button" onClick={() => setShowQrModal(false)} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer">
+                ปิดหน้าต่าง
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* TAB 1: บันทึกงาน */}
         {activeTab === 'log' && (
