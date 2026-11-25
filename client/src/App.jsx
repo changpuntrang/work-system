@@ -47,6 +47,13 @@ export default function App() {
   const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
   const [passwordMessage, setPasswordMessage] = useState({ text: '', type: '' });
 
+  // State สำหรับฟังก์ชัน "ทดลองคิดรายรับของฉัน" (ผู้ใช้กรอกค่าแรงเอง, ประกันสังคมดึงจาก Admin, ค่าปรับมาสายตั้งต้น 1 บาท)
+  const [myCalcForm, setMyCalcForm] = useState({
+    payType: 'daily',
+    rateValue: 500,
+    lateRatePerMinute: 1
+  });
+
   const [allUsers, setAllUsers] = useState([]);
   const [adminNewUser, setAdminNewUser] = useState({ username: '', password: '', role: 'user' });
 
@@ -247,7 +254,6 @@ export default function App() {
     }
   };
 
-  // ฟังก์ชันเปลี่ยนรหัสผ่านและออกจากระบบอัตโนมัติอย่างถูกต้อง
   const handleChangePassword = async (e) => {
     e.preventDefault();
     setPasswordMessage({ text: '', type: '' });
@@ -717,9 +723,13 @@ export default function App() {
 
   const grandTotalPay = Math.max(0, grossPay - ssoDeduction - lateDeduction);
 
-  const rawMyRate = currentUser ? (userRates[currentUser.username] || settings) : settings;
-  const myCalculatedOtRate = Number(((Number(rawMyRate.rateValue) / 8) * 1.5).toFixed(2));
-  const myActiveRate = { ...rawMyRate, otRatePerHour: myCalculatedOtRate };
+  // คำนวณส่วนของ "ทดลองคิดรายรับของฉัน"
+  // - ประกันสังคม (%) ดึงมาจาก Admin (settings.ssoPercent)
+  // - OT คำนวณอัตโนมัติจากค่าแรงที่กรอกเอง: ((rateValue / 8) * 1.5)
+  // - ค่าปรับมาสาย: ใช้เรทที่ผู้ใช้กรอก ถ้าไม่กรอกหรือเป็นค่าว่างให้ใช้ 1 บาทต่อนาที
+  const myCalculatedOtRate = Number(((Number(myCalcForm.rateValue) / 8) * 1.5).toFixed(2));
+  const mySsoPercent = Number(settings.ssoPercent) || 5;
+  const myLateRate = myCalcForm.lateRatePerMinute !== '' && !isNaN(myCalcForm.lateRatePerMinute) ? Number(myCalcForm.lateRatePerMinute) : 1;
 
   const myPeriodLogs = logs.filter(l => {
     const logUser = l.username || 'admin';
@@ -729,20 +739,20 @@ export default function App() {
   }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
   const myDaysCount = myPeriodLogs.length;
-  const myRegularPay = myActiveRate.payType === 'daily' 
-    ? myDaysCount * (Number(myActiveRate.rateValue) || 0) 
+  const myRegularPay = myCalcForm.payType === 'daily' 
+    ? myDaysCount * (Number(myCalcForm.rateValue) || 0) 
     : myPeriodLogs.reduce((sum, l) => {
         const [sH, sM] = (l.startTime || '08:00').split(':').map(Number);
         const [eH, eM] = (l.endTime || '17:00').split(':').map(Number);
         const hours = Math.max(0, (eH + eM / 60) - (sH + sM / 60));
-        return sum + (hours * (Number(myActiveRate.rateValue) || 0));
+        return sum + (hours * (Number(myCalcForm.rateValue) || 0));
       }, 0);
 
-  const myOtPay = myPeriodLogs.reduce((sum, l) => sum + ((Number(l.otHours) || 0) * (Number(myActiveRate.otRatePerHour) || 0)), 0);
+  const myOtPay = myPeriodLogs.reduce((sum, l) => sum + ((Number(l.otHours) || 0) * myCalculatedOtRate), 0);
   const myGrossPay = myRegularPay + myOtPay;
-  const mySsoDeduction = myGrossPay * ((Number(myActiveRate.ssoPercent) || 0) / 100);
+  const mySsoDeduction = myGrossPay * (mySsoPercent / 100);
   const myLateMinutesCount = myPeriodLogs.reduce((sum, l) => sum + (Number(l.lateMinutes) || 0), 0);
-  const myLateDeduction = myLateMinutesCount * (Number(myActiveRate.lateRatePerMinute) || 0);
+  const myLateDeduction = myLateMinutesCount * myLateRate;
   const myGrandTotalPay = Math.max(0, myGrossPay - mySsoDeduction - myLateDeduction);
 
   const currentJobHistory = currentUser && userJobHistories[currentUser.username] ? userJobHistories[currentUser.username] : [];
@@ -879,7 +889,7 @@ export default function App() {
                     onClick={() => setActiveTab('mypass')} 
                     className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition shadow-sm cursor-pointer ${activeTab === 'mypass' ? 'bg-indigo-600 text-white shadow-indigo-500/25 shadow-md' : (darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700/50' : 'bg-slate-100 text-slate-700 hover:bg-slate-200')}`}
                   >
-                    💰 สรุปรายรับของฉัน
+                    🧮 ทดลองคิดรายรับของฉัน
                   </button>
                 )}
 
@@ -1276,13 +1286,13 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB: สรุปรายรับของฉัน */}
+        {/* TAB: ทดลองคิดรายรับของฉัน */}
         {activeTab === 'mypass' && currentUser && currentUser.role !== 'admin' && (
           <div className={`p-6 sm:p-8 rounded-2xl shadow-sm border space-y-6 transition-colors duration-300 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
             <div className={`border-b pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
               <div>
-                <h2 className="text-xl font-bold text-indigo-400">💰 สรุปรายรับและ KPI ของฉัน ({currentUser.username})</h2>
-                <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ตรวจสอบยอดเงินสุทธิและสถิติภาพรวมประจำรอบ</p>
+                <h2 className="text-xl font-bold text-indigo-400">🧮 ทดลองคิดรายรับของฉัน ({currentUser.username})</h2>
+                <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>กรอกค่าแรงและระบุค่าปรับมาสายเพื่อทดลองคำนวณรายรับในรอบนี้ (ประกันสังคมดึงจาก Admin อัตโนมัติ)</p>
               </div>
               
               <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -1303,6 +1313,53 @@ export default function App() {
               </div>
             </div>
 
+            {/* ฟอร์มกรอกข้อมูลการคำนวณ */}
+            <div className={`p-5 rounded-2xl border space-y-4 ${darkMode ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/50 border-slate-200'}`}>
+              <h3 className="text-sm font-bold text-indigo-400">⚙️ กำหนดค่าคำนวณของคุณ</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className={`block text-xs font-semibold mb-1.5 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>ประเภทการคิด</label>
+                  <select 
+                    className={`w-full border px-3 py-2 rounded-xl text-sm outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-300'}`}
+                    value={myCalcForm.payType}
+                    onChange={e => setMyCalcForm({...myCalcForm, payType: e.target.value})}
+                  >
+                    <option value="daily">รายวัน</option>
+                    <option value="hourly">รายชั่วโมง</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={`block text-xs font-semibold mb-1.5 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>เรทค่าแรง ({myCalcForm.payType === 'daily' ? 'บ./วัน' : 'บ./ชม.'})</label>
+                  <input 
+                    type="number" 
+                    className={`w-full border px-3 py-2 rounded-xl text-sm outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-300'}`}
+                    value={myCalcForm.rateValue}
+                    onChange={e => setMyCalcForm({...myCalcForm, rateValue: Number(e.target.value)})}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-xs font-semibold mb-1.5 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>หักประกันสังคม (ดึงจาก Admin)</label>
+                  <input 
+                    type="number" 
+                    readOnly 
+                    className={`w-full border px-3 py-2 rounded-xl text-sm outline-none opacity-75 cursor-not-allowed ${darkMode ? 'bg-slate-900 border-slate-700 text-indigo-400 font-bold' : 'bg-slate-100 border-slate-300 text-indigo-600 font-bold'}`}
+                    value={`${mySsoPercent}%`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-xs font-semibold mb-1.5 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>ค่าปรับมาสาย (บ./นาที)</label>
+                  <input 
+                    type="number" 
+                    step="0.5" 
+                    placeholder="ค่าเริ่มต้น 1 บาท"
+                    className={`w-full border px-3 py-2 rounded-xl text-sm outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-300'}`}
+                    value={myCalcForm.lateRatePerMinute}
+                    onChange={e => setMyCalcForm({...myCalcForm, lateRatePerMinute: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className={`p-5 rounded-2xl border flex flex-col justify-between space-y-2 ${darkMode ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                 <div className="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase">
@@ -1311,7 +1368,7 @@ export default function App() {
                 </div>
                 <div>
                   <div className={`text-2xl font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{myDaysCount} วัน</div>
-                  <div className="text-xs text-indigo-400 mt-1">เรท {myActiveRate.rateValue} บาท ({myActiveRate.payType === 'daily' ? 'รายวัน' : 'รายชั่วโมง'})</div>
+                  <div className="text-xs text-indigo-400 mt-1">เรท {myCalcForm.rateValue} บาท ({myCalcForm.payType === 'daily' ? 'รายวัน' : 'รายชั่วโมง'})</div>
                 </div>
               </div>
 
@@ -1324,7 +1381,7 @@ export default function App() {
                   <div className="text-2xl font-extrabold text-amber-500">
                     {myPeriodLogs.reduce((sum, l) => sum + (Number(l.otHours) || 0), 0)} ชม.
                   </div>
-                  <div className="text-xs text-amber-400/80 mt-1">ค่า OT ~{myOtPay.toLocaleString()} บาท</div>
+                  <div className="text-xs text-amber-400/80 mt-1">ค่า OT ~{myOtPay.toLocaleString()} บาท (OT @ {myCalculatedOtRate} บ./ชม.)</div>
                 </div>
               </div>
 
@@ -1335,7 +1392,7 @@ export default function App() {
                 </div>
                 <div>
                   <div className="text-2xl font-extrabold text-red-400">{myLateMinutesCount} นาที</div>
-                  <div className="text-xs text-red-400/80 mt-1">หักเงิน ~{myLateDeduction.toLocaleString()} บาท</div>
+                  <div className="text-xs text-red-400/80 mt-1">หักเงิน ~{myLateDeduction.toLocaleString()} บาท (@ {myLateRate} บ./นาที)</div>
                 </div>
               </div>
 
@@ -1346,31 +1403,31 @@ export default function App() {
                 </div>
                 <div>
                   <div className="text-2xl font-extrabold text-green-500">{myGrandTotalPay.toLocaleString()} บาท</div>
-                  <div className="text-xs text-slate-400 mt-1">หลังหักประกันสังคม ({myActiveRate.ssoPercent}%) แล้ว</div>
+                  <div className="text-xs text-slate-400 mt-1">หลังหักประกันสังคม ({mySsoPercent}%) แล้ว</div>
                 </div>
               </div>
             </div>
 
             <div className={`p-5 rounded-2xl border space-y-3 ${darkMode ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-              <h3 className="text-sm font-bold text-indigo-400 mb-2">📋 รายละเอียดการคำนวณเงิน</h3>
+              <h3 className="text-sm font-bold text-indigo-400 mb-2">📋 รายละเอียดการคำนวณเงินจำลอง</h3>
               <div className="flex justify-between text-sm">
                 <span className={darkMode ? 'text-slate-400' : 'text-slate-600'}>ยอดค่าแรงปกติ:</span>
                 <span className="font-bold text-blue-500">{myRegularPay.toLocaleString()} บาท</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className={darkMode ? 'text-slate-400' : 'text-slate-600'}>ยอดค่าโอที (OT @ {myActiveRate.otRatePerHour} บ./ชม.):</span>
+                <span className={darkMode ? 'text-slate-400' : 'text-slate-600'}>ยอดค่าโอที (OT @ {myCalculatedOtRate} บ./ชม.):</span>
                 <span className="font-bold text-amber-500">{myOtPay.toLocaleString()} บาท</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className={darkMode ? 'text-slate-400' : 'text-slate-600'}>หัก ประกันสังคม ({myActiveRate.ssoPercent}%):</span>
+                <span className={darkMode ? 'text-slate-400' : 'text-slate-600'}>หัก ประกันสังคม ({mySsoPercent}% ดึงจาก Admin):</span>
                 <span className="font-bold text-red-400">-{mySsoDeduction.toLocaleString()} บาท</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className={darkMode ? 'text-slate-400' : 'text-slate-600'}>หัก มาสายรวม ({myLateMinutesCount} นาที):</span>
+                <span className={darkMode ? 'text-slate-400' : 'text-slate-600'}>หัก มาสายรวม ({myLateMinutesCount} นาที @ {myLateRate} บ./นาที):</span>
                 <span className="font-bold text-red-400">-{myLateDeduction.toLocaleString()} บาท</span>
               </div>
               <div className={`flex justify-between text-base pt-3 border-t ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
-                <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>รวมรายรับสุทธิของคุณ:</span>
+                <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>รวมรายรับสุทธิจำลองของคุณ:</span>
                 <span className="font-bold text-green-500 text-xl">{myGrandTotalPay.toLocaleString()} บาท</span>
               </div>
 
