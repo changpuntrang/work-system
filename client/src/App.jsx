@@ -247,7 +247,7 @@ export default function App() {
     }
   };
 
-  // ฟังก์ชันเปลี่ยนรหัสผ่านและออกจากระบบอัตโนมัติ
+  // ฟังก์ชันเปลี่ยนรหัสผ่านและออกจากระบบอัตโนมัติอย่างถูกต้อง
   const handleChangePassword = async (e) => {
     e.preventDefault();
     setPasswordMessage({ text: '', type: '' });
@@ -282,7 +282,9 @@ export default function App() {
         
         setTimeout(() => {
           setCurrentUser(null);
+          localStorage.removeItem('currentUser');
           setActiveTab('auth');
+          setAuthMode('login');
         }, 1500);
       } else {
         setPasswordMessage({ text: data.message || 'รหัสผ่านเดิมไม่ถูกต้อง', type: 'error' });
@@ -901,7 +903,7 @@ export default function App() {
 
                 <button 
                   type="button"
-                  onClick={() => { setCurrentUser(null); setActiveTab('auth'); }} 
+                  onClick={() => { setCurrentUser(null); localStorage.removeItem('currentUser'); setActiveTab('auth'); }} 
                   className="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border border-red-500/20 cursor-pointer"
                 >
                   ออกจากระบบ
