@@ -47,7 +47,7 @@ export default function App() {
   const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
   const [passwordMessage, setPasswordMessage] = useState({ text: '', type: '' });
 
-  // State สำหรับฟังก์ชัน "ทดลองคิดรายรับของฉัน" (ผู้ใช้กรอกค่าแรงเอง, ประกันสังคมดึงจาก Admin, ค่าปรับมาสายตั้งต้น 1 บาท)
+  // State สำหรับฟังก์ชัน "ทดลองคิดรายรับของฉัน" (ตัดช่อง SSO ออก เหลือให้กรอกเรทค่าแรงและค่าปรับมาสาย)
   const [myCalcForm, setMyCalcForm] = useState({
     payType: 'daily',
     rateValue: 500,
@@ -724,9 +724,6 @@ export default function App() {
   const grandTotalPay = Math.max(0, grossPay - ssoDeduction - lateDeduction);
 
   // คำนวณส่วนของ "ทดลองคิดรายรับของฉัน"
-  // - ประกันสังคม (%) ดึงมาจาก Admin (settings.ssoPercent)
-  // - OT คำนวณอัตโนมัติจากค่าแรงที่กรอกเอง: ((rateValue / 8) * 1.5)
-  // - ค่าปรับมาสาย: ใช้เรทที่ผู้ใช้กรอก ถ้าไม่กรอกหรือเป็นค่าว่างให้ใช้ 1 บาทต่อนาที
   const myCalculatedOtRate = Number(((Number(myCalcForm.rateValue) / 8) * 1.5).toFixed(2));
   const mySsoPercent = Number(settings.ssoPercent) || 5;
   const myLateRate = myCalcForm.lateRatePerMinute !== '' && !isNaN(myCalcForm.lateRatePerMinute) ? Number(myCalcForm.lateRatePerMinute) : 1;
@@ -1292,7 +1289,7 @@ export default function App() {
             <div className={`border-b pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
               <div>
                 <h2 className="text-xl font-bold text-indigo-400">🧮 ทดลองคิดรายรับของฉัน ({currentUser.username})</h2>
-                <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>กรอกค่าแรงและระบุค่าปรับมาสายเพื่อทดลองคำนวณรายรับในรอบนี้ (ประกันสังคมดึงจาก Admin อัตโนมัติ)</p>
+                <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>กรอกเรทค่าแรงและค่าปรับมาสายเพื่อทดลองคำนวณรายรับในรอบนี้ (ประกันสังคมหักตามเรท Admin อัตโนมัติ)</p>
               </div>
               
               <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -1313,10 +1310,10 @@ export default function App() {
               </div>
             </div>
 
-            {/* ฟอร์มกรอกข้อมูลการคำนวณ */}
+            {/* ฟอร์มกรอกข้อมูลการคำนวณ (ตัดช่องประกันสังคมออกแล้ว) */}
             <div className={`p-5 rounded-2xl border space-y-4 ${darkMode ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/50 border-slate-200'}`}>
               <h3 className="text-sm font-bold text-indigo-400">⚙️ กำหนดค่าคำนวณของคุณ</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className={`block text-xs font-semibold mb-1.5 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>ประเภทการคิด</label>
                   <select 
@@ -1335,15 +1332,6 @@ export default function App() {
                     className={`w-full border px-3 py-2 rounded-xl text-sm outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-300'}`}
                     value={myCalcForm.rateValue}
                     onChange={e => setMyCalcForm({...myCalcForm, rateValue: Number(e.target.value)})}
-                  />
-                </div>
-                <div>
-                  <label className={`block text-xs font-semibold mb-1.5 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>หักประกันสังคม (ดึงจาก Admin)</label>
-                  <input 
-                    type="number" 
-                    readOnly 
-                    className={`w-full border px-3 py-2 rounded-xl text-sm outline-none opacity-75 cursor-not-allowed ${darkMode ? 'bg-slate-900 border-slate-700 text-indigo-400 font-bold' : 'bg-slate-100 border-slate-300 text-indigo-600 font-bold'}`}
-                    value={`${mySsoPercent}%`}
                   />
                 </div>
                 <div>
